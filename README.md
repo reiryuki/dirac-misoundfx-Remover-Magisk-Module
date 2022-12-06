@@ -8,7 +8,7 @@
 - Magisk installed
 
 ## Installation Guide & Download Link
-- Install this module via Magisk Manager or Recovery
+- Install this module https://www.pling.com/p/1950625/ via Magisk Manager or Recovery
 - This is also an audio mod so, you need to install AML Magisk Module https://t.me/androidryukimodsdiscussions/29836 if using any other audio mod module
 - Reboot
 - You can check is your dirac or misoundfx removed or not via Terminal Emulator:
