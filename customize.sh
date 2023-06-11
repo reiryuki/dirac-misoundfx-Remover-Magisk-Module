@@ -1,38 +1,5 @@
 # space
-if [ "$BOOTMODE" == true ]; then
-  ui_print " "
-fi
-
-# magisk
-if [ -d /sbin/.magisk ]; then
-  MAGISKTMP=/sbin/.magisk
-else
-  MAGISKTMP=`realpath /dev/*/.magisk`
-fi
-
-# path
-if [ "$BOOTMODE" == true ]; then
-  MIRROR=$MAGISKTMP/mirror
-else
-  MIRROR=
-fi
-SYSTEM=`realpath $MIRROR/system`
-PRODUCT=`realpath $MIRROR/product`
-VENDOR=`realpath $MIRROR/vendor`
-SYSTEM_EXT=`realpath $MIRROR/system_ext`
-if [ -d $MIRROR/odm ]; then
-  ODM=`realpath $MIRROR/odm`
-else
-  ODM=`realpath /odm`
-fi
-if [ -d $MIRROR/my_product ]; then
-  MY_PRODUCT=`realpath $MIRROR/my_product`
-else
-  MY_PRODUCT=`realpath /my_product`
-fi
-
-# optionals
-OPTIONALS=/sdcard/optionals.prop
+ui_print " "
 
 # info
 MODVER=`grep_prop version $MODPATH/module.prop`
@@ -40,26 +7,209 @@ MODVERCODE=`grep_prop versionCode $MODPATH/module.prop`
 ui_print " ID=$MODID"
 ui_print " Version=$MODVER"
 ui_print " VersionCode=$MODVERCODE"
-ui_print " MagiskVersion=$MAGISK_VER"
-ui_print " MagiskVersionCode=$MAGISK_VER_CODE"
+if [ "$KSU" == true ]; then
+  ui_print " KSUVersion=$KSU_VER"
+  ui_print " KSUVersionCode=$KSU_VER_CODE"
+  ui_print " KSUKernelVersionCode=$KSU_KERNEL_VER_CODE"
+else
+  ui_print " MagiskVersion=$MAGISK_VER"
+  ui_print " MagiskVersionCode=$MAGISK_VER_CODE"
+fi
 ui_print " "
+
+# huskydg function
+get_device() {
+PAR="$1"
+DEV="`cat /proc/self/mountinfo | awk '{ if ( $5 == "'$PAR'" ) print $3 }' | head -1 | sed 's/:/ /g'`"
+}
+mount_mirror() {
+SRC="$1"
+DES="$2"
+RAN="`head -c6 /dev/urandom | base64 | tr -dc 'a-zA-Z0-9'`"
+while [ -e /dev/$RAN ]; do
+  RAN="`head -c6 /dev/urandom | base64 | tr -dc 'a-zA-Z0-9'`"
+done
+mknod /dev/$RAN b `get_device "$SRC"; echo $DEV`
+if mount -t ext4 -o ro /dev/$RAN "$DES"\
+|| mount -t erofs -o ro /dev/$RAN "$DES"\
+|| mount -t f2fs -o ro /dev/$RAN "$DES"\
+|| mount -t ubifs -o ro /dev/$RAN "$DES"; then
+  blockdev --setrw /dev/$RAN
+  rm -f /dev/$RAN
+  return 0
+fi
+rm -f /dev/$RAN
+return 1
+}
+unmount_mirror() {
+DIRS="$MIRROR/system_root $MIRROR/system $MIRROR/vendor
+      $MIRROR/product $MIRROR/system_ext $MIRROR/odm
+      $MIRROR/my_product $MIRROR"
+for DIR in $DIRS; do
+  umount $DIR
+done
+}
+mount_odm_to_mirror() {
+DIR=/odm
+if [ -d $DIR ]; then
+  ui_print "- Mount $MIRROR$DIR..."
+  mkdir -p $MIRROR$DIR
+  if mount_mirror $DIR $MIRROR$DIR; then
+    ui_print "  $MIRROR$DIR mount success"
+  else
+    ui_print "  ! $MIRROR$DIR mount failed"
+    rm -rf $MIRROR$DIR
+    if [ -d $MIRROR/system_root$DIR ]; then
+      ln -sf $MIRROR/system_root$DIR $MIRROR
+    fi
+  fi
+  ui_print " "
+fi
+}
+mount_my_product_to_mirror() {
+DIR=/my_product
+if [ -d $DIR ]; then
+  ui_print "- Mount $MIRROR$DIR..."
+  mkdir -p $MIRROR$DIR
+  if mount_mirror $DIR $MIRROR$DIR; then
+    ui_print "  $MIRROR$DIR mount success"
+  else
+    ui_print "  ! $MIRROR$DIR mount failed"
+    rm -rf $MIRROR$DIR
+    if [ -d $MIRROR/system_root$DIR ]; then
+      ln -sf $MIRROR/system_root$DIR $MIRROR
+    fi
+  fi
+  ui_print " "
+fi
+}
+mount_partitions_to_mirror() {
+unmount_mirror
+# mount system
+if [ "$SYSTEM_ROOT" == true ]; then
+  DIR=/system_root
+  ui_print "- Mount $MIRROR$DIR..."
+  mkdir -p $MIRROR$DIR
+  if mount_mirror / $MIRROR$DIR; then
+    ui_print "  $MIRROR$DIR mount success"
+    rm -rf $MIRROR/system
+    ln -sf $MIRROR$DIR/system $MIRROR
+  else
+    ui_print "  ! $MIRROR$DIR mount failed"
+    rm -rf $MIRROR$DIR
+  fi
+else
+  DIR=/system
+  ui_print "- Mount $MIRROR$DIR..."
+  mkdir -p $MIRROR$DIR
+  if mount_mirror $DIR $MIRROR$DIR; then
+    ui_print "  $MIRROR$DIR mount success"
+  else
+    ui_print "  ! $MIRROR$DIR mount failed"
+    rm -rf $MIRROR$DIR
+  fi
+fi
+ui_print " "
+# mount vendor
+DIR=/vendor
+ui_print "- Mount $MIRROR$DIR..."
+mkdir -p $MIRROR$DIR
+if mount_mirror $DIR $MIRROR$DIR; then
+  ui_print "  $MIRROR$DIR mount success"
+else
+  ui_print "  ! $MIRROR$DIR mount failed"
+  rm -rf $MIRROR$DIR
+  ln -sf $MIRROR/system$DIR $MIRROR
+fi
+ui_print " "
+# mount product
+DIR=/product
+ui_print "- Mount $MIRROR$DIR..."
+mkdir -p $MIRROR$DIR
+if mount_mirror $DIR $MIRROR$DIR; then
+  ui_print "  $MIRROR$DIR mount success"
+else
+  ui_print "  ! $MIRROR$DIR mount failed"
+  rm -rf $MIRROR$DIR
+  ln -sf $MIRROR/system$DIR $MIRROR
+fi
+ui_print " "
+# mount system_ext
+DIR=/system_ext
+ui_print "- Mount $MIRROR$DIR..."
+mkdir -p $MIRROR$DIR
+if mount_mirror $DIR $MIRROR$DIR; then
+  ui_print "  $MIRROR$DIR mount success"
+else
+  ui_print "  ! $MIRROR$DIR mount failed"
+  rm -rf $MIRROR$DIR
+  if [ -d $MIRROR/system$DIR ]; then
+    ln -sf $MIRROR/system$DIR $MIRROR
+  fi
+fi
+ui_print " "
+mount_odm_to_mirror
+mount_my_product_to_mirror
+}
+
+# magisk
+MAGISKPATH=`magisk --path`
+if [ "$BOOTMODE" == true ]; then
+  if [ "$MAGISKPATH" ]; then
+    mount -o rw,remount $MAGISKPATH
+    MAGISKTMP=$MAGISKPATH/.magisk
+    MIRROR=$MAGISKTMP/mirror
+  else
+    MAGISKTMP=/mnt
+    mount -o rw,remount $MAGISKTMP
+    MIRROR=$MAGISKTMP/mirror
+    mount_partitions_to_mirror
+  fi
+fi
+
+# path
+SYSTEM=`realpath $MIRROR/system`
+PRODUCT=`realpath $MIRROR/product`
+VENDOR=`realpath $MIRROR/vendor`
+SYSTEM_EXT=`realpath $MIRROR/system_ext`
+if [ "$BOOTMODE" == true ]; then
+  if [ ! -d $MIRROR/odm ]; then
+    mount_odm_to_mirror
+  fi
+  if [ ! -d $MIRROR/my_product ]; then
+    mount_my_product_to_mirror
+  fi
+fi
+ODM=`realpath $MIRROR/odm`
+MY_PRODUCT=`realpath $MIRROR/my_product`
+
+# optionals
+OPTIONALS=/sdcard/optionals.prop
+if [ ! -f $OPTIONALS ]; then
+  touch $OPTIONALS
+fi
 
 # mount
 if [ "$BOOTMODE" != true ]; then
-  mount -o rw -t auto /dev/block/bootdevice/by-name/cust /vendor
-  mount -o rw -t auto /dev/block/bootdevice/by-name/vendor /vendor
+  if [ -e /dev/block/bootdevice/by-name/vendor ]; then
+    mount -o rw -t auto /dev/block/bootdevice/by-name/vendor /vendor
+  else
+    mount -o rw -t auto /dev/block/bootdevice/by-name/cust /vendor
+  fi
+  mount -o rw -t auto /dev/block/bootdevice/by-name/product /product
+  mount -o rw -t auto /dev/block/bootdevice/by-name/system_ext /system_ext
+  mount -o rw -t auto /dev/block/bootdevice/by-name/odm /odm
+  mount -o rw -t auto /dev/block/bootdevice/by-name/my_product /my_product
   mount -o rw -t auto /dev/block/bootdevice/by-name/persist /persist
   mount -o rw -t auto /dev/block/bootdevice/by-name/metadata /metadata
 fi
 
-# sepolicy.rule
-FILE=$MODPATH/sepolicy.sh
-DES=$MODPATH/sepolicy.rule
-if [ "`grep_prop sepolicy.sh $OPTIONALS`" != 1 ]\
+# sepolicy
+FILE=$MODPATH/sepolicy.rule
+DES=$MODPATH/sepolicy.pfsd
+if [ "`grep_prop sepolicy.sh $OPTIONALS`" == 1 ]\
 && [ -f $FILE ]; then
   mv -f $FILE $DES
-  sed -i 's/magiskpolicy --live "//g' $DES
-  sed -i 's/"//g' $DES
 fi
 
 # .aml.sh
@@ -100,95 +250,86 @@ done
 
 # function
 hide_oat() {
-for APPS in $APP; do
-  mkdir -p `find $MODPATH/system -type d -name $APPS`/oat
-  touch `find $MODPATH/system -type d -name $APPS`/oat/.replace
+for APP in $APPS; do
+  REPLACE="$REPLACE
+  `find $MODPATH/system -type d -name $APP | sed "s|$MODPATH||"`/oat"
 done
 }
 replace_dir() {
 if [ -d $DIR ]; then
-  mkdir -p $MODDIR
-  touch $MODDIR/.replace
+  REPLACE="$REPLACE $MODDIR"
 fi
 }
 hide_app() {
-DIR=$SYSTEM/app/$APPS
-MODDIR=$MODPATH/system/app/$APPS
+DIR=$SYSTEM/app/$APP
+MODDIR=/system/app/$APP
 replace_dir
-DIR=$SYSTEM/priv-app/$APPS
-MODDIR=$MODPATH/system/priv-app/$APPS
+DIR=$SYSTEM/priv-app/$APP
+MODDIR=/system/priv-app/$APP
 replace_dir
-DIR=$PRODUCT/app/$APPS
-MODDIR=$MODPATH/system/product/app/$APPS
+DIR=$PRODUCT/app/$APP
+MODDIR=/system/product/app/$APP
 replace_dir
-DIR=$PRODUCT/priv-app/$APPS
-MODDIR=$MODPATH/system/product/priv-app/$APPS
+DIR=$PRODUCT/priv-app/$APP
+MODDIR=/system/product/priv-app/$APP
 replace_dir
-DIR=$MY_PRODUCT/app/$APPS
-MODDIR=$MODPATH/system/product/app/$APPS
+DIR=$MY_PRODUCT/app/$APP
+MODDIR=/system/product/app/$APP
 replace_dir
-DIR=$MY_PRODUCT/priv-app/$APPS
-MODDIR=$MODPATH/system/product/priv-app/$APPS
+DIR=$MY_PRODUCT/priv-app/$APP
+MODDIR=/system/product/priv-app/$APP
 replace_dir
-DIR=$PRODUCT/preinstall/$APPS
-MODDIR=$MODPATH/system/product/preinstall/$APPS
+DIR=$PRODUCT/preinstall/$APP
+MODDIR=/system/product/preinstall/$APP
 replace_dir
-DIR=$SYSTEM_EXT/app/$APPS
-MODDIR=$MODPATH/system/system_ext/app/$APPS
+DIR=$SYSTEM_EXT/app/$APP
+MODDIR=/system/system_ext/app/$APP
 replace_dir
-DIR=$SYSTEM_EXT/priv-app/$APPS
-MODDIR=$MODPATH/system/system_ext/priv-app/$APPS
+DIR=$SYSTEM_EXT/priv-app/$APP
+MODDIR=/system/system_ext/priv-app/$APP
 replace_dir
-DIR=$VENDOR/app/$APPS
-MODDIR=$MODPATH/system/vendor/app/$APPS
+DIR=$VENDOR/app/$APP
+MODDIR=/system/vendor/app/$APP
 replace_dir
-DIR=$VENDOR/euclid/product/app/$APPS
-MODDIR=$MODPATH/system/vendor/euclid/product/app/$APPS
+DIR=$VENDOR/euclid/product/app/$APP
+MODDIR=/system/vendor/euclid/product/app/$APP
 replace_dir
-}
-check_app() {
-if [ "`grep_prop hide.parts $OPTIONALS`" == 1 ]; then
-  for APPS in $APP; do
-    FILE=`find $SYSTEM $PRODUCT $SYSTEM_EXT $VENDOR\
-               $MY_PRODUCT -type f -name $APPS.apk`
-    if [ "$FILE" ]; then
-      ui_print "  Your $APPS.apk will be hidden"
-      hide_app
-    fi
-  done
-fi
 }
 
 # hide
-APP="MiSound Dirac DiracAudioControlService"
-for APPS in $APP; do
+APPS="MiSound Dirac DiracAudioControlService"
+for APP in $APPS; do
   hide_app
 done
 
-# dirac & misoundfx
-FILE=$MODPATH/.aml.sh
-APP="XiaomiParts ZenfoneParts ZenParts GalaxyParts
-     KharaMeParts DeviceParts PocoParts"
-NAME='dirac soundfx'
-UUID=e069d9e0-8329-11df-9168-0002a5d5c51b
-ui_print "- $NAME will be removed systemlessly"
-check_app
-ui_print " "
-FILE=$MODPATH/.aml.sh
-NAME=misoundfx
-UUID=5b8e36a5-144a-4c38-b1d7-0002a5d5c51b
-ui_print "- $NAME will be removed systemlessly"
-check_app
-ui_print " "
-
-# permission
-if [ "$API" -ge 26 ]; then
-  ui_print "- Setting permission..."
-  DIR=`find $MODPATH/system/vendor -type d`
-  for DIRS in $DIR; do
-    chown 0.2000 $DIRS
+# hide
+if [ "`grep_prop hide.parts $OPTIONALS`" == 1 ]; then
+  APPS="XiaomiParts ZenfoneParts ZenParts GalaxyParts
+       KharaMeParts DeviceParts PocoParts"
+  ui_print "- Hides * Parts app"
+  for APP in $APPS; do
+    hide_app
   done
   ui_print " "
 fi
+
+# run
+. $MODPATH/copy.sh
+. $MODPATH/.aml.sh
+
+# unmount
+if [ "$BOOTMODE" == true ] && [ ! "$MAGISKPATH" ]; then
+  unmount_mirror
+fi
+
+
+
+
+
+
+
+
+
+
 
 

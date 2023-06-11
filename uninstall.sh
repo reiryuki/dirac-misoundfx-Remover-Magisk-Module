@@ -1,25 +1,27 @@
 mount -o rw,remount /data
-if [ ! "$MODPATH" ]; then
-  MODPATH=${0%/*}
-fi
-if [ ! "$MODID" ]; then
-  MODID=`echo "$MODPATH" | sed 's|/data/adb/modules/||' | sed 's|/data/adb/modules_update/||'`
-fi
-APP="MiSound Dirac DiracAudioControlService"
-PKG="com.miui.misound se.dirac.acs"
+[ -z $MODPATH ] && MODPATH=${0%/*}
+[ -z $MODID ] && MODID=`basename "$MODPATH"`
      
 # cleaning
-for PKGS in $PKG; do
-  rm -rf /data/user/*/$PKGS
+APPS="MiSound Dirac DiracAudioControlService"
+for APP in $APPS; do
+  rm -f `find /data/system/package_cache -type f -name *$APP*`
+  rm -f `find /data/dalvik-cache /data/resource-cache -type f -name *$APP*.apk`
 done
-for APPS in $APP; do
-  rm -f `find /data/system/package_cache -type f -name *$APPS*`
-  rm -f `find /data/dalvik-cache /data/resource-cache -type f -name *$APPS*.apk`
+PKGS=`cat $MODPATH/package.txt`
+for PKG in $PKGS; do
+  rm -rf /data/user*/*/$PKG
 done
 rm -rf /metadata/magisk/"$MODID"
 rm -rf /mnt/vendor/persist/magisk/"$MODID"
 rm -rf /persist/magisk/"$MODID"
 rm -rf /data/unencrypted/magisk/"$MODID"
 rm -rf /cache/magisk/"$MODID"
+
+
+
+
+
+
 
 

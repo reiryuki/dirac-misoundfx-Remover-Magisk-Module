@@ -1,12 +1,17 @@
-MODPATH=${0%/*}
-APP="MiSound Dirac DiracAudioControlService"
-PKG="com.miui.misound se.dirac.acs"
-for APPS in $APP; do
-  rm -f `find /data/system/package_cache -type f -name *$APPS*`
-  rm -f `find /data/dalvik-cache /data/resource-cache -type f -name *$APPS*.apk`
+[ -z $MODPATH ] && MODPATH=${0%/*}
+
+# cleaning
+APPS="MiSound Dirac DiracAudioControlService"
+for APP in $APPS; do
+  rm -f `find /data/system/package_cache -type f -name *$APP*`
+  rm -f `find /data/dalvik-cache /data/resource-cache -type f -name *$APP*.apk`
 done
-for PKGS in $PKG; do
-  rm -rf /data/user/*/$PKGS/*
+PKGS=`cat $MODPATH/package.txt`
+for PKG in $PKGS; do
+  rm -rf /data/user*/*/$PKG
 done
+
+
+
 
 
