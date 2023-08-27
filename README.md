@@ -27,8 +27,7 @@
 - If you don't do above, issues will be closed immediately
 
 ## Tested on
-- Android 13 AOSP ROM
-- Android 13 CrDroid ROM
+- Android 13 AOSP ROM & 13 CrDroid ROM
 
 ## Credits and contributors
 - https://t.me/viperatmos
