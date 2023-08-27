@@ -1,14 +1,14 @@
 # dirac & misoundfx Remover Magisk Module
 
 ## Descriptions
-- Removes dirac & misoundfx and their apps
+- Removes dirac & misoundfx and their apps systemlessly
 - Required for most of audio mods to be working properly
 
 ## Requirements
 - Magisk or KernelSU installed
 
 ## Installation Guide & Download Link
-- Install this module https://www.pling.com/p/1950625/ via Magisk app or KernelSU app or Recovery (unless you are using KernelSU)
+- Install this module https://www.pling.com/p/1950625/ via Magisk app or KernelSU app or Recovery if Magisk installed
 - This is also an audio mod so, you need to install AML Magisk Module https://t.me/androidryukimodsdiscussions/29836 if using any other audio mod module
 - Reboot
 - You can check is your dirac or misoundfx removed or not via Terminal Emulator:
@@ -36,7 +36,7 @@
 - You can contribute ideas about this Magisk Module here: https://t.me/androidappsportdevelopment
 
 ## Thanks for Donations
-- This Magisk Module is always will be free but you can however show us that you are care by making a donations:
+This Magisk Module is always will be free but you can however show us that you are care by making a donations:
 - https://ko-fi.com/reiryuki
 - https://www.paypal.me/reiryuki
 - https://t.me/androidryukimodsdiscussions/2619

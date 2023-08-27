@@ -1,7 +1,14 @@
 mount -o rw,remount /data
 [ -z $MODPATH ] && MODPATH=${0%/*}
 [ -z $MODID ] && MODID=`basename "$MODPATH"`
-     
+
+# log
+exec 2>/data/media/0/$MODID\_uninstall.log
+set -x
+
+# run
+. $MODPATH/function.sh
+
 # cleaning
 APPS="MiSound Dirac DiracAudioControlService"
 for APP in $APPS; do
@@ -12,11 +19,7 @@ PKGS=`cat $MODPATH/package.txt`
 for PKG in $PKGS; do
   rm -rf /data/user*/*/$PKG
 done
-rm -rf /metadata/magisk/"$MODID"
-rm -rf /mnt/vendor/persist/magisk/"$MODID"
-rm -rf /persist/magisk/"$MODID"
-rm -rf /data/unencrypted/magisk/"$MODID"
-rm -rf /cache/magisk/"$MODID"
+remove_sepolicy_rule
 
 
 
