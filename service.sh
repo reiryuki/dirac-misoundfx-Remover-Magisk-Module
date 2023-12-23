@@ -15,7 +15,7 @@ else
 fi
 PID=`pidof $SERVER`
 if [ "$PID" ]; then
-  killall $SERVER
+  killall $SERVER android.hardware.audio@4.0-service-mediatek
 fi
 
 # wait
@@ -64,6 +64,9 @@ if [ -d $AML ] && [ ! -f $AML/disable ]\
     done
   fi
 fi
+
+# audio flinger
+DMAF=`dumpsys media.audio_flinger`
 
 
 

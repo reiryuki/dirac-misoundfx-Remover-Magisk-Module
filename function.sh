@@ -1,4 +1,16 @@
 # function
+remove_cache() {
+APPS="MiSound Dirac"
+for APP in $APPS; do
+  rm -f `find /data/system/package_cache\
+   /data/dalvik-cache /data/resource-cache\
+   -type f -name *$APP*`
+done
+PKGS=`cat $MODPATH/package.txt`
+for PKG in $PKGS; do
+  rm -rf /data/user*/"$UID"/$PKG
+done
+}
 mount_partitions_in_recovery() {
 if [ "$BOOTMODE" != true ]; then
   DIR=/dev/block/bootdevice/by-name
@@ -132,7 +144,8 @@ fi
 }
 mount_partitions_to_mirror() {
 unmount_mirror
-if [ "$SYSTEM_ROOT" == true ]; then
+if [ "$SYSTEM_ROOT" == true ]\
+|| [ "$SYSTEM_AS_ROOT" == true ]; then
   DIR=/system_root
   ui_print "- Mount $MIRROR$DIR..."
   mkdir -p $MIRROR$DIR

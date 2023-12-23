@@ -1,11 +1,27 @@
 # space
 ui_print " "
 
+# var
+UID=`id -u`
+
 # log
 if [ "$BOOTMODE" != true ]; then
-  FILE=/sdcard/$MODID\_recovery.log
+  FILE=/data/media/"$UID"/$MODID\_recovery.log
   ui_print "- Log will be saved at $FILE"
   exec 2>$FILE
+  ui_print " "
+fi
+
+# optionals
+OPTIONALS=/data/media/"$UID"/optionals.prop
+if [ ! -f $OPTIONALS ]; then
+  touch $OPTIONALS
+fi
+
+# debug
+if [ "`grep_prop debug.log $OPTIONALS`" == 1 ]; then
+  ui_print "- The install log will contain detailed information"
+  set -x
   ui_print " "
 fi
 
@@ -59,12 +75,6 @@ PRODUCT=`realpath $MIRROR/product`
 SYSTEM_EXT=`realpath $MIRROR/system_ext`
 ODM=`realpath $MIRROR/odm`
 MY_PRODUCT=`realpath $MIRROR/my_product`
-
-# optionals
-OPTIONALS=/sdcard/optionals.prop
-if [ ! -f $OPTIONALS ]; then
-  touch $OPTIONALS
-fi
 
 # sepolicy
 FILE=$MODPATH/sepolicy.rule
@@ -140,7 +150,7 @@ hide_app
 if [ "`grep_prop hide.parts $OPTIONALS`" == 1 ]; then
   APPS="XiaomiParts ZenfoneParts ZenParts GalaxyParts
         KharaMeParts DeviceParts PocoParts"
-  ui_print "- Hides * Parts app"
+  ui_print "- Hides Parts app"
   hide_app
   ui_print " "
 fi

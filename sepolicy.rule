@@ -7,10 +7,3 @@ allow { system_file system_lib_file vendor_file vendor_configs_file } labeledfs 
 allow init { system_file system_lib_file vendor_file vendor_configs_file } { dir file } relabelfrom
 
 
-
-
-
-
-
-
-
