@@ -9,9 +9,9 @@
 
 ## Installation Guide & Download Link
 - Install this module https://www.pling.com/p/1950625/ via Magisk app or KernelSU app or Recovery if Magisk installed
-- This is also an audio mod so, you need to install AML Magisk Module https://t.me/androidryukimodsdiscussions/29836 if using any other audio mod module
+- This is also an audio mod so, you need to install AML Magisk Module https://t.me/androidryukimodsdiscussions/29836 if using any other else audio mod module
 - Reboot
-- You can check is your dirac or misoundfx removed or not via Terminal Emulator:
+- You can check is your dirac or misoundfx removed or not via Terminal/Termux app:
 
   `su -c dumpsys media.audio_flinger`
 
@@ -27,17 +27,15 @@
 - If you don't do above, issues will be closed immediately
 
 ## Tested on
-- Android 13 AOSP ROM & 13 CrDroid ROM
+- Android 13 AOSP ROM & CrDroid ROM
+- Android 14 LineageOS ROM
 
-## Credits and contributors
+## Credits and Contributors
 - https://t.me/viperatmos
 - https://t.me/androidryukimodsdiscussions
 - You can contribute ideas about this Magisk Module here: https://t.me/androidappsportdevelopment
 
-## Thanks for Donations
-This Magisk Module is always will be free but you can however show us that you are care by making a donations:
-- https://ko-fi.com/reiryuki
-- https://www.paypal.me/reiryuki
+## Sponsors
 - https://t.me/androidryukimodsdiscussions/2619
 
 
