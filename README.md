@@ -26,16 +26,13 @@
 - https://t.me/androidryukimodsdiscussions/2618 (Z folder is enough, no need logs)
 - If you don't do above, issues will be closed immediately
 
-## Tested on
-- Android 13 AOSP ROM & CrDroid ROM
-- Android 14 LineageOS ROM
-
 ## Credits and Contributors
+- @HuskyDG
 - https://t.me/viperatmos
 - https://t.me/androidryukimodsdiscussions
 - You can contribute ideas about this Magisk Module here: https://t.me/androidappsportdevelopment
 
 ## Sponsors
-- https://t.me/androidryukimodsdiscussions/2619
+- https://t.me/ryukinotes/25
 
 
