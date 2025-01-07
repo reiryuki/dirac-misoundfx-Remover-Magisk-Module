@@ -126,7 +126,8 @@ done
 }
 
 # hide
-APPS="MiSound Dirac DiracAudioControlService"
+APPS="MiSound Dirac DiracAudioControlService
+      NothingDiracService_DMP DiracAudioControlService_DMP"
 hide_app
 
 # hide

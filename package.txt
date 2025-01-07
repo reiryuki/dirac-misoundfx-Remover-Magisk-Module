@@ -1,2 +1,4 @@
 com.miui.misound
 se.dirac.acs
+com.nothing.dirac
+com.nothing.dirac_DMP
