@@ -50,7 +50,8 @@ RMVS="libdiraceffect.so libdiraceffect-afm.so
       dirac_controller 128B9BA2-D0C9-47C6-AFF3-9F761CD0E228
       libdirac.so b437f4de-da28-449b-9673-667f8b9643fe
       dirac_music b437f4de-da28-449b-9673-667f8b964304
-      dirac e069d9e0-8329-11df-9168-0002a5d5c51b"
+      dirac e069d9e0-8329-11df-9168-0002a5d5c51b
+      libdiraceffect_NT.so ae737c63-f2c0-5457-909e-1e940c91b67b"
 for MODAEC in $MODAECS; do
   remove_conf
 done
