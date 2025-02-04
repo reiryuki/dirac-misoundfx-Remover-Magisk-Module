@@ -1,7 +1,7 @@
 id=diracmisoundfxRemover
 name=dirac & misoundfx Remover
-version=v0.7
-versionCode=7
+version=v0.8
+versionCode=8
 author=Rei Ryuki the Fixer
 description=Removes dirac sound effect & misoundfx and their apps systemlessly.
 
