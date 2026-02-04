@@ -139,6 +139,7 @@ if [ "`grep_prop hide.parts $OPTIONALS`" == 1 ]; then
 fi
 
 # run
+MODSYSTEM=/system
 . $MODPATH/copy.sh
 . $MODPATH/.aml.sh
 
