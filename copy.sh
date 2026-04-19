@@ -22,10 +22,3 @@ done
 rm -f `find $MODPATH -type f -name *audio*effects*spatializer*.xml -o -name *audio*effects*haptic*.xml`
 
 
-
-
-
-
-
-
-
