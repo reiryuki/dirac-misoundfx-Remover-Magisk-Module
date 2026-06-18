@@ -6,6 +6,11 @@
 
 ## Changelog
 
+v1.2
+- Support NoMount metamodule
+- Resets module folders/files permissions at post-fs-data
+- Move _uninstall.log to /data/adb/logs/
+
 v1.1
 - Fix wrong target in latest KernelSU
 - ro.audio.soundfx.dirac=false
@@ -45,25 +50,20 @@ v0.3
 - Fix Magisk v26.1 support
 - Fix KernelSU support
 
-v0.2
-- KernelSU support
-- Magisk v26.1 support
-- Mount required partitions in Recovery
-
 ## Requirements
-- Magisk or Kitsune Mask or KernelSU or Apatch installed
+Magisk or Kitsune Mask or KernelSU or Apatch installed
 
 ## Installation Guide & Download Link
-- Install this module https://devuploads.com/oxtlqx7m82ly via Magisk app or Kitsune Mask app or KernelSU app or Apatch app or Recovery if Magisk or Kitsune Mask installed
+- Install this module via Magisk app or Kitsune Mask app or KernelSU app or Apatch app or Recovery if Magisk or Kitsune Mask installed
 - This is also an audio mod so, you need to install AML Magisk Module https://t.me/ryukinotes/34 if using any other else audio mod module
 - Reboot
 - You can use https://github.com/reiryuki/Z-Folder-Script and check loaded_soundfx.txt created is your dirac or misoundfx effect removed or not.
 
 ## Optionals
-- Global: https://t.me/ryukinotes/35
+Global: https://t.me/ryukinotes/35
 
 ## Troubleshootings
-- Global: https://t.me/ryukinotes/34
+Global: https://t.me/ryukinotes/34
 
 ## Support & Bug Report
 - https://t.me/ryukinotes/54 (Z folder is enough, no need logs)
@@ -76,6 +76,6 @@ v0.2
 - You can contribute ideas about this Magisk Module here: https://t.me/androidappsportdevelopment
 
 ## Sponsors
-- https://t.me/ryukinotes/25
+https://t.me/ryukinotes/25
 
 
